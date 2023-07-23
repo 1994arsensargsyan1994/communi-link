@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':communi-link-api:communi-link-api-facade:communi-link-api-facade-core')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+}

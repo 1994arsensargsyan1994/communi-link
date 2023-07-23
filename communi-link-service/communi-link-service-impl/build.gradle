@@ -1,0 +1,5 @@
+dependencies {
+    runtimeOnly('org.postgresql:postgresql')
+    api project(':communi-link-service:communi-link-persistence')
+    api project(':communi-link-service:communi-link-service-core')
+}

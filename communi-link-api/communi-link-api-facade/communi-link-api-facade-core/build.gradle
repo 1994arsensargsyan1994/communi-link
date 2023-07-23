@@ -1,0 +1,3 @@
+dependencies {
+    api project(':communi-link-api:communi-link-api-model')
+}

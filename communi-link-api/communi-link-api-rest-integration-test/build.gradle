@@ -1,0 +1,10 @@
+dependencies {
+    testImplementation project(":communi-link-service:communi-link-service-impl")
+    testImplementation project(":communi-link-service:communi-link-migration")
+
+    testImplementation project(":communi-link-api:communi-link-api-facade:communi-link-api-facade-impl")
+    testImplementation project(":communi-link-api:communi-link-api-rest:communi-link-api-rest-resource")
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.testcontainers:postgresql'
+}

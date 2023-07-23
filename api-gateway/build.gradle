@@ -1,0 +1,32 @@
+plugins {
+    id 'com.google.cloud.tools.jib'
+}
+
+dependencies {
+    api project(':communi-link-api:communi-link-api-rest:communi-link-api-rest-client')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-oauth2-jose:6.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+}
+
+jib {
+    to {
+        tags = [version, 'latest']
+    }
+    container {
+        // Set Work Directory.
+        workingDirectory = '/app'
+        // Expose different port.
+        ports = ['8080']
+    }
+}

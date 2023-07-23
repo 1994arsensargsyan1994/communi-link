@@ -1,0 +1,13 @@
+{
+  "name": "GOOGLE",
+  "types": [
+    {
+      "type": "PARKING",
+      "isPayable": false
+    },
+    {
+      "type": "GYM",
+      "isPayable": false
+    }
+  ]
+}

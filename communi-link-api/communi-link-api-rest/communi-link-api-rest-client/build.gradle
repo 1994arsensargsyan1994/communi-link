@@ -1,0 +1,6 @@
+dependencies {
+    api project(':communi-link-api:communi-link-api-model')
+
+    api 'org.springframework.cloud:spring-cloud-openfeign-core'
+    api 'io.github.openfeign:feign-core'
+}

@@ -1,0 +1,6 @@
+dependencies {
+    api project(':communi-link-service:communi-link-service-core')
+    api project(':communi-link-api:communi-link-api-facade:communi-link-api-facade-core')
+
+    implementation 'org.springframework:spring-context'
+}

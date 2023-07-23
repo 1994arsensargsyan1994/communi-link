@@ -1,0 +1,28 @@
+rootProject.name = 'communi-link'
+
+include ':common'
+include ':common:common-core'
+include ':common:common-dto'
+include ':common:common-api-model'
+
+include ":communi-link-api"
+include ':communi-link-api:communi-link-api-app'
+include ':communi-link-api:communi-link-api-model'
+
+include ':communi-link-api:communi-link-api-facade'
+include ':communi-link-api:communi-link-api-facade:communi-link-api-facade-core'
+include ':communi-link-api:communi-link-api-facade:communi-link-api-facade-impl'
+
+include ':communi-link-api:communi-link-api-rest'
+include 'communi-link-api:communi-link-api-rest-integration-test'
+include ':communi-link-api:communi-link-api-rest:communi-link-api-rest-client'
+include ':communi-link-api:communi-link-api-rest:communi-link-api-rest-resource'
+
+include ':communi-link-service'
+include ':communi-link-service:communi-link-persistence'
+include ':communi-link-service:communi-link-service-core'
+include ':communi-link-service:communi-link-service-impl'
+include ':communi-link-service:communi-link-migration'
+
+include ':api-gateway'
+
