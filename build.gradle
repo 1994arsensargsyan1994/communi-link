@@ -43,7 +43,6 @@ subprojects {
         implementation 'org.slf4j:jul-to-slf4j'
 
         testImplementation 'org.mockito:mockito-core'
-//        testImplementation 'junit:junit'
         testImplementation 'org.testcontainers:junit-jupiter'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
