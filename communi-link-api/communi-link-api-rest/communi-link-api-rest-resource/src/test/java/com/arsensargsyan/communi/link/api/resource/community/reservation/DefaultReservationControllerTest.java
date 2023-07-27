@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.arsensargsyan.communi.link.api.facade.ReservationServiceFacade;
 import com.arsensargsyan.communi.link.api.model.request.ReservationCreationRequest;
+import com.arsensargsyan.communi.link.api.model.response.ReservationCancelResponse;
 import com.arsensargsyan.communi.link.api.model.response.ReservationCreationResponse;
 import com.arsensargsyan.communi.link.api.resource.community.AbstractCommunityRestTest;
 import org.assertj.core.api.Assertions;
@@ -47,5 +48,22 @@ public class DefaultReservationControllerTest extends AbstractCommunityRestTest 
         Assertions.assertThat(creationResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         verify(reservationServiceFacade).reserve(eq(communityId), eq(request));
+    }
+
+    @Test
+    public void testCancel() {
+        final Long communityId = randomId();
+        final Long reservationId = randomId();
+
+        final var response = new ReservationCancelResponse();
+
+        when(reservationServiceFacade.cancel(eq(communityId), eq(reservationId))).thenReturn(response);
+
+        final ResponseEntity<ReservationCancelResponse> creationResponse = reservationController.cancel(communityId, reservationId);
+
+        Assertions.assertThat(creationResponse.getBody()).isEqualTo(response);
+        Assertions.assertThat(creationResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        verify(reservationServiceFacade).cancel(eq(communityId), eq(reservationId));
     }
 }

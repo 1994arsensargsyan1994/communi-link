@@ -6,7 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.arsensargsyan.communi.link.api.facade.cancellation.ReservationCancellationHandler;
 import com.arsensargsyan.communi.link.api.facade.creation.ReservationCreationHandler;
+import com.arsensargsyan.communi.link.api.model.response.ReservationCancelResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +20,16 @@ public class DefaultReservationServiceFacadeTest extends AbstractCommunityServic
     @Mock
     private ReservationCreationHandler reservationCreationHandler;
 
+    @Mock
+    private ReservationCancellationHandler reservationCancellationHandler;
+
     @InjectMocks
     private DefaultReservationServiceFacade reservationServiceFacade;
 
     @Override
     @AfterEach
     protected void verifyNoMoreMockInteractions() {
-        verifyNoMoreInteractions(reservationCreationHandler);
+        verifyNoMoreInteractions(reservationCreationHandler, reservationCancellationHandler);
     }
 
     @Test
@@ -53,5 +58,35 @@ public class DefaultReservationServiceFacadeTest extends AbstractCommunityServic
         Assertions.assertThat(reservationServiceFacade.reserve(communityId, reservationRequest)).isEqualTo(reservationResponse);
 
         verify(reservationCreationHandler).reserve(communityId, reservationRequest);
+    }
+
+    @Test
+    public void testCancelWithInvalidParameters() {
+        final Long communityId = randomId();
+        final Long reservationId = randomId();
+
+        Assertions.assertThatThrownBy(() -> reservationServiceFacade.cancel(null, null))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        Assertions.assertThatThrownBy(() -> reservationServiceFacade.cancel(communityId, null))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        Assertions.assertThatThrownBy(() -> reservationServiceFacade.cancel(null, reservationId))
+                .isInstanceOf(IllegalArgumentException.class);
+
+    }
+
+    @Test
+    public void testCancel() {
+        final Long communityId = randomId();
+        final Long reservationId = randomId();
+
+        final var reservationResponse = new ReservationCancelResponse();
+
+        when(reservationCancellationHandler.cancel(communityId, reservationId)).thenReturn(reservationResponse);
+
+        Assertions.assertThat(reservationServiceFacade.cancel(communityId, reservationId)).isEqualTo(reservationResponse);
+
+        verify(reservationCancellationHandler).cancel(communityId, reservationId);
     }
 }

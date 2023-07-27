@@ -9,6 +9,7 @@ import com.arsensargsyan.communi.link.common.CommunityType;
 public final class CommunityControllerIntegrationTestHelper {
 
     public static final long COMMUNITY_ID = 1L;
+    public static final long RESERVATION_ID = 1L;
 
     private static final CommunityType COMMUNITY_TYPE = CommunityType.GYM;
     private static final String COMMUNITY_NAME = "AMAZON";

@@ -3,19 +3,24 @@ package com.arsensargsyan.communi.link.service;
 import static com.arsensargsyan.communi.link.service.CommunityServiceTestHelper.persistentCommunity;
 import static com.arsensargsyan.communi.link.service.CommunityServiceTestHelper.persistentReservation;
 import static com.arsensargsyan.communi.link.service.CommunityServiceTestHelper.persistentResident;
+import static com.arsensargsyan.communi.link.service.CommunityServiceTestHelper.reservationCancellationParameter;
 import static com.arsensargsyan.communi.link.service.CommunityServiceTestHelper.reservationCreationParameter;
+import static com.arsensargsyan.communi.link.service.CommunityServiceTestHelper.setId;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 import com.arsensargsyan.communi.link.common.CommunityType;
 import com.arsensargsyan.communi.link.persistence.community.PersistentReservation;
+import com.arsensargsyan.communi.link.persistence.community.repository.CommunityRepository;
 import com.arsensargsyan.communi.link.persistence.community.repository.ReservationRepository;
+import com.arsensargsyan.communi.link.service.cancellation.ReservationCancellationFailure;
+import com.arsensargsyan.communi.link.service.cancellation.ReservationCancellationResult;
 import com.arsensargsyan.communi.link.service.creation.ReservationCreationFailure;
 import com.arsensargsyan.communi.link.service.creation.ReservationCreationResult;
 import com.arsensargsyan.communi.link.service.lookup.CommunityLookupService;
@@ -40,6 +45,9 @@ public class DefaultReservationServiceTest extends AbstractCommunityServiceTest 
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private CommunityRepository communityRepository;
+
     @InjectMocks
     private DefaultReservationService reservationService;
 
@@ -61,8 +69,8 @@ public class DefaultReservationServiceTest extends AbstractCommunityServiceTest 
         final var persistentCommunity = persistentCommunity(CommunityType.PARKING);
         final var creationParameter = reservationCreationParameter(communityId);
 
-        persistentCommunity.maxCount(10);
-        persistentCommunity.currentCount(persistentCommunity.maxCount());
+        persistentCommunity.maxCount(1);
+        persistentCommunity.incrementCurrentCount();
 
         when(communityLookupService.get(communityId)).thenReturn(persistentCommunity);
 
@@ -83,7 +91,7 @@ public class DefaultReservationServiceTest extends AbstractCommunityServiceTest 
         final var persistentReservation = persistentReservation(persistentCommunity, persistentResident);
 
         persistentCommunity.maxCount(10);
-        persistentCommunity.currentCount(persistentCommunity.maxCount() - BigDecimal.ONE.intValue());
+        persistentCommunity.incrementCurrentCount();
 
         when(communityLookupService.get(communityId)).thenReturn(persistentCommunity);
         when(residentLookupService.lookup(persistentCommunity.id(), creationParameter.username()))
@@ -109,8 +117,8 @@ public class DefaultReservationServiceTest extends AbstractCommunityServiceTest 
 
         final var persistentReservation = persistentReservation(persistentCommunity, persistentResident);
 
-        persistentCommunity.maxCount(10);
-        persistentCommunity.currentCount(persistentCommunity.maxCount() - BigDecimal.ONE.intValue());
+        persistentCommunity.maxCount(2);
+        persistentCommunity.incrementCurrentCount();
 
         when(communityLookupService.get(communityId)).thenReturn(persistentCommunity);
         when(residentLookupService.lookup(persistentCommunity.id(), creationParameter.username())).thenReturn(Optional.empty());
@@ -124,5 +132,42 @@ public class DefaultReservationServiceTest extends AbstractCommunityServiceTest 
         verify(communityLookupService).get(communityId);
         verify(residentLookupService).lookup(persistentCommunity.id(), creationParameter.username());
         verify(reservationRepository).save(any(PersistentReservation.class));
+    }
+
+    @Test
+    public void testCancelReservationNotFound() {
+        final var parameter = reservationCancellationParameter();
+
+        when(reservationLookupService.lookup(parameter.reservationId(), parameter.communityId()))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThat(reservationService.cancel(parameter)).isEqualTo(new ReservationCancellationResult(
+                List.of(ReservationCancellationFailure.RESERVATION_NOT_FOUND)
+        ));
+
+        verify(reservationLookupService).lookup(parameter.reservationId(), parameter.communityId());
+    }
+
+    @Test
+    public void testCancel() {
+        final var community = persistentCommunity();
+        setId(community, randomId());
+
+        final var reservation = persistentReservation(community);
+        setId(reservation, randomId());
+
+        final var parameter = reservationCancellationParameter(reservation.id(), community.id());
+
+        when(reservationLookupService.lookup(parameter.reservationId(), parameter.communityId()))
+                .thenReturn(Optional.of(reservation));
+
+        doNothing().when(reservationRepository).deleteById(parameter.reservationId());
+        doNothing().when(communityRepository).cancel(parameter.communityId());
+
+        Assertions.assertThat(reservationService.cancel(parameter)).isEqualTo(ReservationCancellationResult.SUCCESS);
+
+        verify(reservationLookupService).lookup(parameter.reservationId(), parameter.communityId());
+        verify(reservationRepository).deleteById(parameter.reservationId());
+        verify(communityRepository).cancel(parameter.communityId());
     }
 }

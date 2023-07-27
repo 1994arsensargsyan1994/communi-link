@@ -1,7 +1,9 @@
 package com.arsensargsyan.communi.link.api.resource.community.reservation;
 
 import static com.arsensargsyan.communi.link.api.resource.community.CommunityControllerIntegrationTestHelper.COMMUNITY_ID;
+import static com.arsensargsyan.communi.link.api.resource.community.CommunityControllerIntegrationTestHelper.RESERVATION_ID;
 import static com.arsensargsyan.communi.link.api.resource.community.CommunityControllerIntegrationTestHelper.reservationCreationRequest;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,6 +24,14 @@ public class ReservationControllerIntegrationTest extends AbstractCommunityContr
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$.reservationId").isNotEmpty())
+                .andExpect(jsonPath("$.successful").value(Boolean.TRUE));
+    }
+
+    @Test
+    public void testCancel() throws Exception {
+        mockMvc.perform(delete("/community/{communityId}/cancel/{reservationId}", COMMUNITY_ID, RESERVATION_ID))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$.successful").value(Boolean.TRUE));
     }
 
