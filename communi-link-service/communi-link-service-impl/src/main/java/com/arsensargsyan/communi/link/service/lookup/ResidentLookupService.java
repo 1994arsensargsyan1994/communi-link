@@ -6,6 +6,5 @@ import com.arsensargsyan.communi.link.persistence.community.PersistentResident;
 
 public interface ResidentLookupService {
 
-   Optional<PersistentResident> lookup(Long communityId,String username);
-
+    Optional<PersistentResident> lookup(Long communityId, String username);
 }

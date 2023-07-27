@@ -81,8 +81,8 @@ public class PersistentCommunity extends AuditableEntity {
         return currentCount >= maxCount;
     }
 
-    public PersistentCommunity currentCount(final Integer currentCount) {
-        this.currentCount = currentCount;
+    public PersistentCommunity incrementCurrentCount() {
+        this.currentCount = currentCount + 1;
         return this;
     }
 

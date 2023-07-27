@@ -24,4 +24,9 @@ class DefaultReservationLookupService implements ReservationLookupService {
         Assert.notNull(resident, "Null was passed as an argument for parameter 'resident'.");
         return reservationRepository.findByResident(resident);
     }
+
+    @Override
+    public Optional<PersistentReservation> lookup(final Long id, final Long commodityId) {
+        return reservationRepository.findById(id).filter(reservation -> reservation.community().id().equals(commodityId));
+    }
 }

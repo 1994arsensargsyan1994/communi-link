@@ -3,11 +3,13 @@ package com.arsensargsyan.communi.link.api.client;
 import com.arsensargsyan.communi.link.api.model.request.CommunityCreationRequest;
 import com.arsensargsyan.communi.link.api.model.request.ReservationCreationRequest;
 import com.arsensargsyan.communi.link.api.model.response.CommunityCreationResponse;
+import com.arsensargsyan.communi.link.api.model.response.ReservationCancelResponse;
 import com.arsensargsyan.communi.link.api.model.response.ReservationCreationResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,5 +30,12 @@ public interface CommunityClient {
     )
     ReservationCreationResponse reserve(
             @PathVariable("communityId") Long communityId, @NotNull @Valid @RequestBody ReservationCreationRequest request
+    );
+
+    @DeleteMapping(
+            value = "/community/{communityId}/cancel/{reservationId}"
+    )
+    ReservationCancelResponse cancel(
+            @PathVariable("communityId") Long communityId, @PathVariable("reservationId") Long reservationId
     );
 }

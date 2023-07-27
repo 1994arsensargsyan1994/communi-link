@@ -11,6 +11,8 @@ public interface ReservationLookupService {
 
     Optional<PersistentReservation> lookup(PersistentResident resident);
 
+    Optional<PersistentReservation> lookup(Long id, Long commodityId);
+
     // A feature should use for resident can reserve with no overlap data ranges
     default Optional<PersistentReservation> withInvalidDuration(
             LocalDateTime start, int days, PersistentResident resident
