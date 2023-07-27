@@ -35,3 +35,5 @@ Authorization: Bearer {{token}}
 }
 
 ###
+DELETE http://localhost:8081/community/1/cancel/1
+Authorization: Bearer {{token}}

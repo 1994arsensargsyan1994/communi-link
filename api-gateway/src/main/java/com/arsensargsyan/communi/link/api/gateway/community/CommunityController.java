@@ -9,6 +9,7 @@ import com.arsensargsyan.communi.link.api.client.CommunityClient;
 import com.arsensargsyan.communi.link.api.model.request.CommunityCreationRequest;
 import com.arsensargsyan.communi.link.api.model.request.ReservationCreationRequest;
 import com.arsensargsyan.communi.link.api.model.response.CommunityCreationResponse;
+import com.arsensargsyan.communi.link.api.model.response.ReservationCancelResponse;
 import com.arsensargsyan.communi.link.api.model.response.ReservationCreationResponse;
 import com.arsensargsyan.communi.link.common.FailureDto;
 import com.arsensargsyan.communi.link.common.api.model.CommonFailures;
@@ -26,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +37,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 @Validated
 @RestController
-@RequestMapping(value = "/community", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/community")
 public class CommunityController {
 
     private static final Logger logger = LoggerFactory.getLogger(CommunityController.class);
@@ -61,7 +63,10 @@ public class CommunityController {
                     content = @Content(schema = @Schema(oneOf = CommunityCreationResponse.class))
             )
     )
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public DeferredResult<ResponseEntity<CommunityCreationResponse>> create(
             @Valid @RequestBody final CommunityCreationRequest request
     ) {
@@ -79,7 +84,11 @@ public class CommunityController {
                     content = @Content(schema = @Schema(oneOf = ReservationCreationResponse.class))
             )
     )
-    @PostMapping(path = "/{communityId}/reserve")
+    @PostMapping(
+            path = "/{communityId}/reserve",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     DeferredResult<ResponseEntity<ReservationCreationResponse>> reserve(
             @PathVariable("communityId") Long communityId, @Valid @NotNull @RequestBody ReservationCreationRequest request
     ) {
@@ -87,6 +96,18 @@ public class CommunityController {
         return deferredResponse(
                 CompletableFuture.supplyAsync(() -> communityClient.reserve(communityId, request), executor),
                 ReservationCreationResponse::new
+        );
+    }
+
+    @DeleteMapping(
+            value = "/{communityId}/cancel/{reservationId}"
+    )
+    DeferredResult<ResponseEntity<ReservationCancelResponse>> cancel(
+            @PathVariable("communityId") Long communityId, @PathVariable("reservationId") Long reservationId) {
+        logger.info("Reservation for given communityId: {} and reservationId: {}.", communityId, reservationId);
+        return deferredResponse(
+                CompletableFuture.supplyAsync(() -> communityClient.cancel(communityId, reservationId), executor),
+                ReservationCancelResponse::new
         );
     }
 

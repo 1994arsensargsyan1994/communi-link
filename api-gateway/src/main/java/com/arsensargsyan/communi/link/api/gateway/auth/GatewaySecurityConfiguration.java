@@ -1,5 +1,6 @@
 package com.arsensargsyan.communi.link.api.gateway.auth;
 
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
@@ -50,7 +51,7 @@ class GatewaySecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
 
-        configuration.setAllowedMethods(List.of(GET.name(), POST.name(), PUT.name()));
+        configuration.setAllowedMethods(List.of(GET.name(), POST.name(), PUT.name(), DELETE.name()));
         configuration.applyPermitDefaultValues();
 
         final UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
