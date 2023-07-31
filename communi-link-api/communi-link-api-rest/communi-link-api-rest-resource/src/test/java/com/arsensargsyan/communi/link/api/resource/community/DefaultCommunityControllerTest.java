@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import com.arsensargsyan.communi.link.api.facade.CommunityServiceFacade;
 import com.arsensargsyan.communi.link.api.model.request.CommunityCreationRequest;
 import com.arsensargsyan.communi.link.api.model.response.CommunityCreationResponse;
+import com.arsensargsyan.communi.link.api.model.response.LookupCommunityDetailsResponse;
+import com.arsensargsyan.communi.link.api.model.response.details.CommunityDetailsDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -46,4 +48,19 @@ public class DefaultCommunityControllerTest extends AbstractCommunityRestTest {
         verify(communityServiceFacade).create(eq(request));
     }
 
+    @Test
+    public void lookupDetails() {
+        final Long id = randomId();
+        final var response = new LookupCommunityDetailsResponse();
+        response.setDetails(new CommunityDetailsDto());
+
+        when(communityServiceFacade.lookupDetails(eq(id))).thenReturn(response);
+
+        final ResponseEntity<LookupCommunityDetailsResponse> detailsResponse = communityController.lookupDetails(id);
+
+        Assertions.assertThat(detailsResponse.getBody()).isEqualTo(response);
+        Assertions.assertThat(detailsResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        verify(communityServiceFacade).lookupDetails(eq(id));
+    }
 }
