@@ -7,6 +7,9 @@ import com.arsensargsyan.communi.link.persistence.community.repository.Community
 import com.arsensargsyan.communi.link.service.creation.CommunityCreationFailure;
 import com.arsensargsyan.communi.link.service.creation.CommunityCreationParameter;
 import com.arsensargsyan.communi.link.service.creation.CommunityCreationResult;
+import com.arsensargsyan.communi.link.service.lookup.CommunityLookupService;
+import com.arsensargsyan.communi.link.service.lookup.LookupCommunityDetailsResult;
+import com.arsensargsyan.communi.link.service.lookup.details.ImmutableCommunityDetailsAdapter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -16,8 +19,14 @@ class DefaultCommunityService implements CommunityService {
 
     private final CommunityRepository communityRepository;
 
-    public DefaultCommunityService(final CommunityRepository communityRepository) {
+    private final CommunityLookupService communityLookupService;
+
+    public DefaultCommunityService(
+            final CommunityRepository communityRepository,
+            final CommunityLookupService communityLookupService
+    ) {
         this.communityRepository = communityRepository;
+        this.communityLookupService = communityLookupService;
     }
 
     @Override
@@ -27,6 +36,16 @@ class DefaultCommunityService implements CommunityService {
         return isAlreadyExists(parameter)
                 ? new CommunityCreationResult(List.of(CommunityCreationFailure.COMMUNITY_ALREADY_EXISTS))
                 : new CommunityCreationResult(createCommunity(parameter).id());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LookupCommunityDetailsResult lookupDetails(final Long id) {
+        Assert.notNull(id, "Null was passed as an argument for parameter 'id'.");
+        return communityLookupService.lookup(id)
+                .map(ImmutableCommunityDetailsAdapter::new)
+                .map(LookupCommunityDetailsResult::new)
+                .orElse(LookupCommunityDetailsResult.notFound());
     }
 
     private PersistentCommunity createCommunity(final CommunityCreationParameter param) {
